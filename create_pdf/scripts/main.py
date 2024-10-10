@@ -8,9 +8,15 @@ from reportlab.lib.units import inch
 import os
 
 def create_pdf(num_pages, target_size_mb):
-    filename = f"pdf_{num_pages}pages_{target_size_mb}MB.pdf"
+    # pdfディレクトリが存在しない場合は作成
+    pdf_dir = 'pdf'
+    if not os.path.exists(pdf_dir):
+        os.makedirs(pdf_dir)
 
-    doc = SimpleDocTemplate(filename, pagesize=letter, topMargin=0.5*inch, bottomMargin=0.5*inch, leftMargin=0.5*inch, rightMargin=0.5*inch)
+    filename = f"pdf_{num_pages}pages_{target_size_mb}MB.pdf"
+    filepath = os.path.join(pdf_dir, filename)
+
+    doc = SimpleDocTemplate(filepath, pagesize=letter, topMargin=0.5*inch, bottomMargin=0.5*inch, leftMargin=0.5*inch, rightMargin=0.5*inch)
     styles = getSampleStyleSheet()
     custom_style = ParagraphStyle('CustomStyle', fontSize=12, leading=14, textColor=colors.black)
 
@@ -31,15 +37,15 @@ def create_pdf(num_pages, target_size_mb):
     doc.build(story)
 
     # ファイルサイズが目標に達するまでダミーデータを追加
-    current_size = os.path.getsize(filename)
+    current_size = os.path.getsize(filepath)
     target_size = target_size_mb * 1024 * 1024  # Convert MB to bytes
 
     if current_size < target_size:
-        with open(filename, 'ab') as f:
+        with open(filepath, 'ab') as f:
             f.write(b'\0' * (target_size - current_size))
 
-    print(f"{num_pages}-page PDF has been created successfully as '{filename}'!")
-    print(f"File size: {os.path.getsize(filename) / (1024 * 1024):.2f} MB")
+    print(f"{num_pages}-page PDF has been created successfully as '{filepath}'!")
+    print(f"File size: {os.path.getsize(filepath) / (1024 * 1024):.2f} MB")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate a multi-page PDF with specified file size')
