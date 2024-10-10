@@ -1,0 +1,9 @@
+services:
+  app:
+    container_name: py-pdf
+    build: .
+    volumes:
+      - ./scripts:/scripts
+    tty: true
+    stdin_open: true
+    # command: python main.py
